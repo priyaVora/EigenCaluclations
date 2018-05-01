@@ -1,10 +1,14 @@
 package control;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 
 import model.Matrix;
 
@@ -86,8 +90,25 @@ public class EigenCalculator {
 
 	public void isEigenValue(Matrix A, double lambda) throws IOException {
 		boolean folder = new File(System.getProperty("user.home") + "/Desktop" + "\\MatrixShowWork").mkdirs();
-		PrintWriter writer = new PrintWriter(
+
+		File fileDir = new File(
 				System.getProperty("user.home") + "/Desktop" + "\\MatrixShowWork" + "\\IsEigenValue.txt");
+
+		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileDir), "UTF8"));
+
+		out.append("Step 1: Use forumla (A-λ)v = 0").append("\r\n");
+		out.append("Step 2: Use result from formula in matrix row operation with zeros(right of augment matrix)")
+				.append("\r\n");
+		out.append("Does the row operation result to zeros across?").append("\r\n");
+		out.append("If yes: " + lambda + " is valid for this matrix.").append("\r\n");
+		out.flush();
+		out.close();
+
+		// writer.println("Step 1: Use forumla (A-λ)v = 0");
+		// writer.println("Step 2: Use result from formula in matrix row operation with
+		// zeros(right of augment matrix)");
+		// writer.println("Does the row operation result to zeros across?");
+		// writer.println("If yes: " + lambda + "is valid for this matrix.");
 
 		System.out.println("-----------------------------------------------------------------------------------");
 		System.out.println("-----------------------------------------------------------------------------------");
@@ -122,6 +143,7 @@ public class EigenCalculator {
 		System.out.println("-----------------------------------------------------------------------------------");
 		System.out.println("-----------------------------------------------------------------------------------");
 		System.out.println("-----------------------------------------------------------------------------------");
+
 	}
 
 	public boolean isEigenVector(Matrix givenVector, Matrix A) throws FileNotFoundException {
