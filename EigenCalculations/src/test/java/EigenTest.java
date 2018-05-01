@@ -79,7 +79,7 @@ public class EigenTest {
 	}
 
 	@Test
-	public void testEigenVector2() throws FileNotFoundException {
+	public void testEigenVector2() throws IOException {
 		EigenCalculator cal = new EigenCalculator();
 		Matrix A = new Matrix("A", 2, 2);
 		double[][] a_data = new double[2][2];

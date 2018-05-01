@@ -36,21 +36,33 @@ public class EigenCalculator {
 		// cal.subtraction_UnknownMatrices(givenMatrix, lambda_data);
 
 		EigenCalculator cal = new EigenCalculator();
-		Matrix A = new Matrix("A", 2, 2);
-		double[][] a_data = new double[2][2];
+		Matrix A = new Matrix("A", 3, 3);
+		double[][] a_data = new double[3][3];
 		a_data[0][0] = 3;
-		a_data[0][1] = 2;
-		a_data[1][0] = 3;
-		a_data[1][1] = 8;
+		a_data[0][1] = 7;
+		a_data[0][2] = 9;
+
+		a_data[1][0] = -4;
+		a_data[1][1] = -5;
+		a_data[1][2] = 1;
+
+		a_data[2][0] = 2;
+		a_data[2][1] = 4;
+		a_data[2][2] = 4;
+
 		A.setCurrentMatrix(a_data);
-		double lambda = 2;
+		Matrix givenVector = new Matrix("givenVector", 3, 1);
+		double[][] vectorData = new double[3][1];
+		vectorData[0][0] = 4;
+		vectorData[1][0] = -3;
+		vectorData[2][0] = 1;
+		givenVector.setCurrentMatrix(vectorData);
 		try {
-			cal.isEigenValue(A, lambda);
+			cal.isEigenVector(givenVector, A);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	public String[][] lambdaIdentity_UnknowLamda(int identitySize) {
@@ -192,11 +204,26 @@ public class EigenCalculator {
 		out.close();
 	}
 
-	public boolean isEigenVector(Matrix givenVector, Matrix A) throws FileNotFoundException {
-		boolean folder = new File(System.getProperty("user.home") + "/Desktop" + "\\MatrixShowWork").mkdirs();
-		PrintWriter writer = new PrintWriter(
+	public boolean isEigenVector(Matrix givenVector, Matrix A) throws IOException {
+		File fileDir = new File(
 				System.getProperty("user.home") + "/Desktop" + "\\MatrixShowWork" + "\\IsEigenVector.txt");
+
+		Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileDir), "UTF8"));
+
+		out.append("Step 1: Multiply Given Matrix A to Eigen Vector given").append("\r\n");
+		out.append("Step 2: Check if the result is a scaled version of the eigen vector").append("\r\n");
+		out.append("   If so, the eigen vector is valid, if not the eigen vector is not valid ");
+		out.append("--------------------------------------------------------------------------").append("\r\n");
+
+		out.append("\r\n").append("\r\n");
+		out.append("Given Matrix A: ").append("\r\n");
+		appendToFile(out, A.getCurrentMatrix());
+		out.append("Given Vector: ").append("\r\n");
+		appendToFile(out, givenVector.getCurrentMatrix());
+		out.append("Matrix Multiplication Result: ").append("\r\n");
+
 		Matrix multiplicationMatrix = matrixCal.multipyMatrices(A, givenVector);
+		appendToFile(out, multiplicationMatrix.getCurrentMatrix());
 		A.printMatrix();
 		givenVector.printMatrix();
 		multiplicationMatrix.printMatrix();
@@ -208,12 +235,44 @@ public class EigenCalculator {
 				double division = multiplicationMatrix.getCurrentMatrix()[i][j] / givenVector.getCurrentMatrix()[i][j];
 				if (division != scalarValue) {
 					System.out.println("Given vector is not an eigen vector of the Matrix A.");
+					out.append("Given vector is not an eigen vector of the Matrix A.").append("\r\n");
+					out.flush();
+					out.close();
 					return false;
 				}
 			}
 		}
+		boolean areAllZeros = false;
+		loop: for (int i = 0; i < multiplicationMatrix.getCurrentMatrix().length; i++) {
+			for (int j = 0; j < multiplicationMatrix.getCurrentMatrix()[0].length; j++) {
+				double[][] check = new double[multiplicationMatrix
+						.getCurrentMatrix().length][multiplicationMatrix.getCurrentMatrix()[i].length];
+				check[i][j] = 0;
+				if (check[i][j] == multiplicationMatrix.getCurrentMatrix()[i][j]) {
+					areAllZeros = true;
+				} else {
+					areAllZeros = false;
+					break loop;
+				}
+			}
+		}
+
+		if (areAllZeros == true) {
+			System.out.println("CANT");
+			out.append("VECTOR IS ALL ZEROS. CAN'T BE SCALED...").append("\r\n");
+			out.flush();
+			out.close();
+			return false;
+		}
 		System.out.println("Given vector is an eigen vector of the Matrix A.");
+		out.append("Given vector is an eigen vector of the Matrix A.").append("\r\n");
+
+		out.append(" To Find Corresponding Value: ").append("\r\n");
+		out.append(scalarValue + "");
+		out.flush();
+		out.close();
 		return true;
+
 	}
 
 	public void grabsContentFromFile(String file1, String file2) {
